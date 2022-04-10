@@ -3,7 +3,7 @@
         <swiper :indicator-dots="propData.length > 0" :indicator-color="indicator_color" :indicator-active-color="indicator_active_color" :autoplay="propData.length > 0" :circular="circular" :class="'banner banner-'+(propSize || 'default')" v-if="propData.length > 0">
             <block v-for="(item, index) in propData" :key="index">
                 <swiper-item>
-                    <image :src="item.images_url" mode="widthFix" :data-value="item.event_value || item.url" :data-type="item.event_type == undefined ? 1 : item.event_type" @tap="banner_event"></image>
+                    <image :src="item.pic" mode="widthFix" :data-value="item.event_value || item.url" :data-type="item.event_type == undefined ? 1 : item.event_type" @tap="banner_event"></image>
                 </swiper-item>
             </block>
         </swiper>

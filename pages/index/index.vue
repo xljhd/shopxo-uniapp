@@ -2,7 +2,7 @@
     <view>
         <view :class="((plugins_mourning_data || 0) == 1 ? ' grayscale' : '')+(is_single_page == 1 ? ' single-page-top' : '')">
             <!-- 顶部内容 -->
-            <view v-if="load_status == 1" class="home-top-nav-content" :style="top_content_style">
+            <view  class="home-top-nav-content" :style="top_content_style">
                 <!-- 标题 -->
                 <view class="home-top-nav-title cr-white single-text">{{application_title}}</view>
 
@@ -14,20 +14,6 @@
                             <component-search propPlaceholder="输入商品名称搜索" propBgColor="#fff"></component-search>
                         </view>
                     </view>
-
-                    <!-- #ifdef H5 || APP -->
-                    <!-- 右上角icon列表 -->
-                  <!--  <view v-if="(right_icon_list || null) != null && right_icon_list.length > 0" class="nav-top-right-icon pa">
-                        <block v-for="(item,index) in right_icon_list">
-                            <view class="item dis-inline-block cp" :data-value="item.url || ''" @tap="url_event">
-                                <uni-icons :type="item.icon" size="18" color="#f1f1f1"></uni-icons>
-                                <view v-if="(item.badge || null) != null" class="badge-icon pa">
-                                    <component-badge :propNumber="item.badge"></component-badge>
-                                </view>
-                            </view>
-                        </block>
-                    </view> -->
-                    <!-- #endif -->
                 </view>
 
                 <!-- 轮播 -->
@@ -37,24 +23,36 @@
             </view>
 
             <!-- 内容 -->
+            <!-- 内容 -->
             <view class="content padding-horizontal-main">
-                <!-- 导航 -->
-               <!-- <view v-if="navigation.length > 0">
-                    <component-icon-nav :propData="navigation"></component-icon-nav>
-                </view> -->
-				
-                <!-- 首页中间广告 - 插件 -->
-           <!--     <view v-if="(plugins_homemiddleadv_data || null) != null && plugins_homemiddleadv_data.length > 0" class="plugins-homemiddleadv oh">
-                    <view v-for="(item,index) in plugins_homemiddleadv_data" :key="index" class="item border-radius-main oh cp spacing-mb" :data-value="item.url || ''" @tap="url_event">
-                        <image class="dis-block wh-auto border-radius-main" :src="item.images" mode="widthFix"></image>
-                    </view>
-                </view> -->
-                
-                <!-- 活动配置-楼层顶部 - 插件 -->
-                <block>
-                    <component-activity-list :propData="plugins_activity_data" propLocation="0" :propLabel="plugins_label_data" :propCurrencySymbol="currency_symbol"></component-activity-list>
-                </block>
-                          
+               <view v-for="(floor, index) in data_list" :key="index" class="floor">
+                                    
+                   <view class="floor-list wh-auto oh pr">
+                   
+                       <view v-if="floor.length > 0" class="goods-list">
+                           <view v-for="(goods, index2) in floor" :key="index2" class="goods bg-white border-radius-main oh pr">
+                               <!-- 商品主体内容 -->
+                               <navigator :url="'/pages/goods-detail/goods-detail?id=' + goods.id" hover-class="none">
+                                   <image class="goods-img dis-block" :src="goods.pic" mode="aspectFit"></image>
+                                   <view class="goods-base padding-horizontal-main margin-top-sm">
+                                       <view class="goods-title multi-text margin-bottom-sm">{{goods.name}}</view>
+                                       <view class="sales-price">{{currency_symbol}}{{goods.price}}</view>
+                                   </view>
+                               </navigator>
+                               <!-- 标签插件 -->
+                              <!-- <view v-if="(plugins_label_data || null) != null && plugins_label_data.data.length > 0" :class="'plugins-label oh pa plugins-label-'+((plugins_label_data.base.is_user_goods_label_icon || 0) == 0 ? 'text' : 'img')+' plugins-label-'+(plugins_label_data.base.user_goods_show_style || 'top-left')">
+                                   <block v-for="(lv,li) in plugins_label_data.data" :key="li">
+                                       <view v-if="lv.goods_ids.indexOf(goods.id) != -1" class="lv dis-inline-block va-m" :data-value="((plugins_label_data.base.is_user_goods_label_url || 0) == 1) ? (lv.url || '') : ''" @tap="url_event">
+                                           <view v-if="(plugins_label_data.base.is_user_goods_label_icon || 0) == 0" class="round cr-white bg-main text-size-xs fl" :style="((lv.bg_color || null) != null ? 'background-color:'+ lv.bg_color+' !important;' : '')+((lv.text_color || null) != null ? 'color:'+ lv.text_color+' !important;' : '')">{{lv.name}}</view>
+                                           <image v-else class="dis-block" :src="lv.icon" mode="scaleToFill"></image>
+                                       </view>
+                                   </block>
+                               </view> -->
+                           </view>
+               			
+                       </view>
+                   </view>  
+               </view>
             </view>
             
             <!-- 提示信息 -->
@@ -202,84 +200,18 @@
                     data_list_loding_status: 1
                 });
 		
-				this.$api.productList().then(res => {
-					console.log(res);
-					this.plugins_activity_data = res.data.list;
+				this.$api.productList({pageNum:1,pageSize:30}).then(res => {
+					this.data_list = [res.data.list];
 				});
-                // uni.request({
-                //     url: app.globalData.get_request_url("index", "index"),
-                //     method: "POST",
-                //     data: {},
-                //     dataType: "json",
-                //     success: res => {
-                //         uni.stopPullDownRefresh();
-                //         // 获取最新缓存
-                //         if (this.load_status == 0) {
-                //             this.init_config(true);
-                //         }
-
-                //         // 设置首次加载状态
-                //         this.setData({
-                //             load_status: 1
-                //         });
-
-                //         if (res.data.code == 0) {
-                //             var data = res.data.data;
-                //             this.setData({
-                //                 data_bottom_line_status: true,
-                //                 banner_list: data.banner_list || [],
-                //                 navigation: data.navigation || [],
-                //                 article_list: data.article_list || [],
-                //                 data_list: data.data_list,
-                //                 cart_total: (data.common_cart_total || 0) == 0 ? 0 : data.common_cart_total,
-                //                 message_total: (data.common_message_total || 0) == 0 ? 0 : data.common_message_total,
-                //                 right_icon_list: data.right_icon_list || [],
-                //                 data_list_loding_status: data.data_list.length == 0 ? 0 : 3,
-                //                 plugins_seckill_data: data.plugins_seckill_data || null,
-                //                 plugins_seckill_is_valid: (data.plugins_seckill_data || null) != null && (data.plugins_seckill_data.is_valid || 0) == 1 ? 1 : 0,
-                //                 plugins_salerecords_data: (data.plugins_salerecords_data || null) == null || data.plugins_salerecords_data.length <= 0 ? null : data.plugins_salerecords_data,
-                //                 plugins_activity_data: (data.plugins_activity_data || null) == null || data.plugins_activity_data.length <= 0 ? null : data.plugins_activity_data,
-                //                 plugins_label_data: (data.plugins_label_data || null) == null || (data.plugins_label_data.base || null) == null || (data.plugins_label_data.data || null) == null || data.plugins_label_data.data.length <= 0 ? null : data.plugins_label_data,
-                //                 plugins_homemiddleadv_data: (data.plugins_homemiddleadv_data || null) == null || data.plugins_homemiddleadv_data.length <= 0 ? null : data.plugins_homemiddleadv_data,
-                //                 plugins_popupscreen_data: data.plugins_popupscreen_data || null,
-                //                 plugins_mourning_data: data.plugins_mourning_data || 0,
-                //                 plugins_blog_data: data.plugins_blog_data || null
-                //             });
-
-                //             // 弹屏广告插件处理
-                //             this.plugins_popupscreen_handle();
-
-                //             // 导航购物车处理
-                //             if (this.cart_total <= 0) {
-                //                 app.globalData.set_tab_bar_badge(2, 0);
-                //             } else {
-                //                 app.globalData.set_tab_bar_badge(2, 1, this.cart_total);
-                //             }
-                //         } else {
-                //             this.setData({
-                //                 data_list_loding_status: 0,
-                //                 data_list_loding_msg: res.data.msg,
-                //                 data_bottom_line_status: true
-                //             });
-                //             app.globalData.showToast(res.data.msg);
-                //         }
-
-                //         // 分享菜单处理、延时执行，确保基础数据已加载完成
-                //         setTimeout(function() {
-                //             app.globalData.page_share_handle();
-                //         }, 1000);
-                //     },
-                //     fail: () => {
-                //         uni.stopPullDownRefresh();
-                //         this.setData({
-                //             data_list_loding_status: 2,
-                //             data_list_loding_msg: '服务器请求出错',
-                //             data_bottom_line_status: true,
-                //             load_status: 1
-                //         });
-                //         app.globalData.showToast("服务器请求出错");
-                //     }
-                // });
+				
+				this.$api.bannerList().then(res => {
+					console.log(res)
+					this.setData({
+						banner_list:res.data.list || []
+					});
+					
+				});
+           
             },
             
             // 页面滚动监听
