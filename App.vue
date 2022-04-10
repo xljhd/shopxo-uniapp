@@ -43,7 +43,7 @@
                     "/pages/user/user"
                 ],
                 // 请求地址
-                request_url: 'https://d1.shopxo.vip/',
+                request_url: 'https://mall.xialj.cn/',
                 // 静态资源地址（如系统根目录不在public目录下面请在静态地址后面加public目录、如：https://d1.shopxo.vip/public/）
                 static_url: 'https://d1.shopxo.vip/',
                 // 基础信息
@@ -155,7 +155,7 @@
             get_request_url(a, c, plugins, params, group) {
                 a = a || "index";
                 c = c || "index";
-                
+
                 // 是否插件请求、走api统一插件调用控制器
                 var plugins_params = "";
                 if ((plugins || null) != null) {
